@@ -1,9 +1,7 @@
 [workspace]
-members = [
-    "crates/core",
-    "crates/server"
-]
+members = ["crates/core", "crates/server"]
 
 [workspace.dependencies]
 log = "0.4.28"
 env_logger = "0.11.8"
+tokio = { version = "1.47.1", features = ["rt", "sync"] }
