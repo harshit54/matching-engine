@@ -1,9 +1,12 @@
-// pub struct Trade {
-//     pub id: i32,
-//     pub asset_id: i32,
-//     pub : i32,
-//     pub order_type: Type,
-//     pub order_side: Side,
-//     pub quantity: Decimal,
-//     pub price: Option<Decimal>, // Only required for Limit orders
-// }
+use std::time;
+
+use rust_decimal::Decimal;
+
+pub struct Trade {
+    pub id: i32,
+    pub buy_order_id: i32,
+    pub sell_order_id: i32,
+    pub price: Decimal,
+    pub qty: Decimal,
+    pub created_at: time::Instant,
+}

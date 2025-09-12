@@ -6,6 +6,7 @@ pub struct Order {
     pub instrument_id: i32,
     pub order_type: Type,
     pub order_side: Side,
+    pub order_state: State,
     pub quantity: Decimal,
     pub price: Option<Decimal>, // Only required for Limit orders
 }
@@ -18,4 +19,10 @@ pub enum Type {
 pub enum Side {
     Buy,
     Sell,
+}
+
+pub enum State {
+    Created,
+    PartiallyFilled,
+    Filled,
 }

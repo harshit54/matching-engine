@@ -1,8 +1,11 @@
+use std::time;
+
 use crate::repo::error::RepoError;
 
 pub struct UserDbModel {
     pub id: i32,
     pub username: String,
+    pub created_at: time::Instant,
 }
 
 pub trait UserRepo {

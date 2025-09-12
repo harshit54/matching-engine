@@ -1,38 +1,53 @@
 use log::error;
+use rust_decimal::Decimal;
 
 use crate::domain::error::ServiceError::DatabaseError;
 use crate::{
-    domain::{error::ServiceError, order::Order},
-    repo::order::OrderRepo,
+    domain::{error::ServiceError, trade::Trade},
+    repo::trade::TradeRepo,
 };
 
 pub trait Service {
-    fn create_order(&self, username: String) -> Result<Order, ServiceError>;
-    fn get_order(&self, id: i32) -> Result<Order, ServiceError>;
-    fn list_orders(&self) -> Result<Vec<Order>, ServiceError>;
+    fn create_trade(
+        &self,
+        buy_order_id: i32,
+        sell_order_id: i32,
+        price: &Decimal,
+        qty: &Decimal,
+    ) -> Result<Trade, ServiceError>;
+    fn get_trade(&self, id: i32) -> Result<Trade, ServiceError>;
+    fn list_trades(&self) -> Result<Vec<Trade>, ServiceError>;
 }
 
-pub struct ServiceImpl<R: OrderRepo> {
+pub struct ServiceImpl<R: TradeRepo> {
     repo: R,
 }
 
-impl<R: OrderRepo> ServiceImpl<R> {
+impl<R: TradeRepo> ServiceImpl<R> {
     pub fn new(repo: R) -> Self {
         Self { repo }
     }
 }
 
-impl<R: OrderRepo> Service for ServiceImpl<R> {
-    fn create_order(&self, username: String) -> Result<Order, ServiceError> {
-        match self.repo.create_order(username) {
-            Ok(val) => Ok(Order {
+impl<R: TradeRepo> Service for ServiceImpl<R> {
+    fn create_trade(
+        &self,
+        buy_order_id: i32,
+        sell_order_id: i32,
+        price: &Decimal,
+        qty: &Decimal,
+    ) -> Result<Trade, ServiceError> {
+        match self
+            .repo
+            .create_trade(buy_order_id, sell_order_id, price, qty)
+        {
+            Ok(val) => Ok(Trade {
                 id: val.id,
-                user_id: val.user_id,
-                instrument_id: val.instrument_id,
-                order_side: val.order_side,
-                order_type: val.order_type,
                 price: val.price,
-                quantity: val.quantity,
+                qty: val.qty,
+                buy_order_id: val.buy_order_id,
+                sell_order_id: val.sell_order_id,
+                created_at: val.created_at,
             }),
             Err(err) => {
                 error!("couldn't fetch result from user repo - {:?}", err);
@@ -41,16 +56,15 @@ impl<R: OrderRepo> Service for ServiceImpl<R> {
         }
     }
 
-    fn get_order(&self, id: i32) -> Result<Order, ServiceError> {
-        match self.repo.get_order(id) {
-            Ok(val) => Ok(Order {
+    fn get_trade(&self, id: i32) -> Result<Trade, ServiceError> {
+        match self.repo.get_trade(id) {
+            Ok(val) => Ok(Trade {
                 id: val.id,
-                user_id: val.user_id,
-                instrument_id: val.instrument_id,
-                order_side: val.order_side,
-                order_type: val.order_type,
                 price: val.price,
-                quantity: val.quantity,
+                qty: val.qty,
+                buy_order_id: val.buy_order_id,
+                sell_order_id: val.sell_order_id,
+                created_at: val.created_at,
             }),
             Err(err) => match err {
                 crate::repo::error::RepoError::NotFoundError => Err(ServiceError::NotFoundError),
@@ -59,20 +73,19 @@ impl<R: OrderRepo> Service for ServiceImpl<R> {
         }
     }
 
-    fn list_orders(&self) -> Result<Vec<Order>, ServiceError> {
-        match self.repo.list_orders() {
+    fn list_trades(&self) -> Result<Vec<Trade>, ServiceError> {
+        match self.repo.list_trades() {
             Ok(val) => {
-                let mut res: Vec<Order> = Vec::with_capacity(val.len());
+                let mut res: Vec<Trade> = Vec::with_capacity(val.len());
 
-                for user in val.into_iter() {
-                    res.push(Order {
-                        id: user.id,
-                        user_id: user.user_id,
-                        instrument_id: user.instrument_id,
-                        order_side: user.order_side,
-                        order_type: user.order_type,
-                        price: user.price,
-                        quantity: user.quantity,
+                for trade in val.into_iter() {
+                    res.push(Trade {
+                        id: trade.id,
+                        price: trade.price,
+                        qty: trade.qty,
+                        buy_order_id: trade.buy_order_id,
+                        sell_order_id: trade.sell_order_id,
+                        created_at: trade.created_at,
                     });
                 }
 

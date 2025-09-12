@@ -2,6 +2,14 @@ use std::time;
 
 use rust_decimal::Decimal;
 
+pub struct Level {
+    pub order_id: i32,
+    pub price: Decimal,
+    pub quantity: Decimal,
+    pub created_at: time::Instant,
+}
+
+#[derive(Debug)]
 pub enum EventType {
     Trade,
     Kline,
@@ -9,14 +17,15 @@ pub enum EventType {
     Ticker,
 }
 
+#[derive(Debug)]
 pub struct TradeStreamData {
-    event_type: EventType,
-    timestamp: time::Instant,
-    symbol: String,
-    trade_id: i32,
-    price: Decimal,
-    quantity: Decimal,
-    is_maker: bool,
+    pub event_type: EventType,
+    pub timestamp: time::Instant,
+    pub symbol: String,
+    pub trade_id: i32,
+    pub price: Decimal,
+    pub quantity: Decimal,
+    pub is_buyer_maker: bool,
 }
 
 pub struct KlineStreamData {
