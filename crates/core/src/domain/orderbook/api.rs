@@ -1,9 +1,6 @@
 use std::{
     cmp::{Ordering, Reverse},
     collections::{BTreeMap, LinkedList},
-    error::Error,
-    fmt::Binary,
-    iter::Rev,
     time,
 };
 
@@ -18,10 +15,7 @@ use crate::{
             self, Order,
             model::{Side, State, Type},
         },
-        orderbook::model::{
-            EventType, KlineStreamData, Level, PartialDepthOrderbookStreamData, TickerStreamData,
-            TradeStreamData,
-        },
+        orderbook::model::{EventType, Level, TradeStreamData},
     },
     repo::{error::RepoError, order::OrderRepo, trade::TradeRepo},
 };
