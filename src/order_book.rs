@@ -1,6 +1,6 @@
 use crate::generator::Generator;
 use crate::half_book::HalfBook;
-use crate::types::Side;
+use crate::types::{BookSide, OrderSide};
 use std::fmt;
 
 pub struct OrderBook {
@@ -26,8 +26,8 @@ impl fmt::Display for OrderBook {
 
 impl OrderBook {
     pub fn new() -> OrderBook {
-        let bids = HalfBook::new();
-        let asks = HalfBook::new();
+        let asks = HalfBook::new(BookSide::Asks);
+        let bids = HalfBook::new(BookSide::Bids);
         let generator = Generator::new();
 
         OrderBook {
@@ -38,40 +38,27 @@ impl OrderBook {
         }
     }
 
-    pub fn add_order(&mut self, side: Side, price: u64, quantity: u64) -> u64 {
+    pub fn remove_order(&mut self, oid: u64) -> bool {
+        self.asks.remove_order(oid) || self.bids.remove_order(oid)
+    }
+
+    pub fn add_order(&mut self, side: OrderSide, price: u64, quantity: u64) -> u64 {
         let mut order = self.generator.new_order(side, price, quantity);
         let oid = order.id;
 
-        match order.side {
-            // For buy order, match and reduce on Asks, then add on Bids
-            Side::Buy => {
-                let trades = self.asks.match_and_reduce(&mut self.generator, &mut order);
-                if trades.len() > 0 {
-                    println!("Trades: {trades:?}")
-                } else {
-                    println!("No Trade")
-                }
+        let (reduce_hb, add_hb) = match side {
+            OrderSide::Buy => (&mut self.asks, &mut self.bids),
+            OrderSide::Sell => (&mut self.bids, &mut self.asks),
+        };
 
-                if order.quantity > 0 {
-                    self.bids.add_order(order)
-                }
-            }
-
-            Side::Sell => {
-                // For sell order, match and reduce on Bids, then add on Asks
-                let trades = self.bids.match_and_reduce(&mut self.generator, &mut order);
-                if trades.len() > 0 {
-                    println!("Trades: {trades:?}")
-                } else {
-                    println!("No Trade")
-                }
-
-                if order.quantity > 0 {
-                    self.asks.add_order(order)
-                }
-            }
+        let trades = reduce_hb.match_and_reduce(&mut self.generator, &mut order);
+        if trades.len() > 0 {
+            println!("Trades: {trades:?}")
         }
 
+        if order.quantity > 0 {
+            add_hb.add_order(order)
+        }
         oid
     }
 }

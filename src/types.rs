@@ -1,13 +1,19 @@
-#[derive(Debug)]
-pub enum Side {
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum OrderSide {
     Buy,
     Sell,
+}
+
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum BookSide {
+    Asks,
+    Bids,
 }
 
 #[derive(Debug)]
 pub struct Order {
     pub id: u64,
-    pub side: Side,
+    pub side: OrderSide,
     pub price: u64,
     pub quantity: u64,
 }

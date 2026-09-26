@@ -9,7 +9,7 @@ Functions:
 2. Remove Order -> ID -> Success/Fail
 */
 use order_book::OrderBook;
-use types::Side;
+use types::OrderSide;
 
 mod generator;
 mod half_book;
@@ -19,8 +19,8 @@ mod types;
 fn main() {
     let mut ob = OrderBook::new();
 
-    ob.add_order(Side::Sell, 1, 1);
-    ob.add_order(Side::Buy, 1, 1);
+    let o1 = ob.add_order(OrderSide::Buy, 105, 10);
+    let o2 = ob.add_order(OrderSide::Buy, 105, 10);
 
     println!("{}", ob);
 }
