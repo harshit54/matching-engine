@@ -1,4 +1,4 @@
-use crate::{Order, Side, Trade};
+use crate::types::{Order, Side, Trade};
 
 #[derive(Debug)]
 pub struct Generator {
@@ -21,7 +21,13 @@ impl Generator {
         }
     }
 
-    pub fn new_trade(&mut self, maker_oid: u64, taker_oid: u64, price: u64, quantity: u64) -> Trade {
+    pub fn new_trade(
+        &mut self,
+        maker_oid: u64,
+        taker_oid: u64,
+        price: u64,
+        quantity: u64,
+    ) -> Trade {
         self.tid += 1;
         Trade {
             id: self.tid,

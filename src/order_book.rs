@@ -1,6 +1,6 @@
-use crate::Side;
 use crate::generator::Generator;
 use crate::half_book::HalfBook;
+use crate::types::Side;
 use std::fmt;
 
 pub struct OrderBook {

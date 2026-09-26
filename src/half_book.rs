@@ -1,5 +1,5 @@
 use crate::generator::Generator;
-use crate::{Order, Side, Trade};
+use crate::types::{Order, Side, Trade};
 use std::cmp::Ordering;
 use std::collections::btree_map::OccupiedEntry;
 use std::collections::{BTreeMap, VecDeque};
@@ -37,7 +37,7 @@ impl HalfBook {
     pub fn get_best_price_level(
         &mut self,
         side: &Side,
-    ) -> Option<OccupiedEntry<u64, VecDeque<Order>>> {
+    ) -> Option<OccupiedEntry<'_, u64, VecDeque<Order>>> {
         // BTreeMap first_entry is the minimum entry.
         match side {
             Side::Buy => self.orders.last_entry(),
